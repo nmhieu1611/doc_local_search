@@ -12,6 +12,9 @@ import PyPDF2
 import nltk
 from nltk.util import ngrams
 
+nltk.download('punkt')
+nltk.download('stopwords')
+
 model = SentenceTransformer('./gte-tiny')
 chroma_client = chromadb.PersistentClient(path="./test_chromadb")
 
