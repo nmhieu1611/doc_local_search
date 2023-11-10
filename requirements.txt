@@ -3,3 +3,4 @@ nltk == 3.8.1
 sentence-transformers == 2.2.2
 streamlit == 1.28.1
 transformers == 4.34.1
+pysqlite3-binary

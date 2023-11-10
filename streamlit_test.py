@@ -1,3 +1,8 @@
+import('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+
 import streamlit as st
 from transformers import AutoTokenizer, AutoModel
 from sentence_transformers import SentenceTransformer
@@ -21,6 +26,10 @@ def embed_function(texts: Documents) -> Embeddings:
     return model.encode(texts).tolist()
     
 def click_ingest_file_btn():
+
+    if st.session_state.new_doc == "":
+        return
+        
     # creating a pdf reader object
     pdfReader = PyPDF2.PdfReader(st.session_state.new_doc)
      
