@@ -1,9 +1,5 @@
 import streamlit as st
-import tkinter as tk
-from tkinter import filedialog as fd
 from transformers import AutoTokenizer, AutoModel
-import os.path
-import pandas as pd
 from sentence_transformers import SentenceTransformer
 import chromadb
 from chromadb.api.types import Documents, Embeddings
@@ -21,24 +17,17 @@ if 'new_doc' not in st.session_state:
 if 'search_res' not in st.session_state:
     st.session_state.search_res = []
 
-# def click_select_file_btn():
-    # st.session_state.book_count += 1
-    # st.session_state.new_doc = 'book ' + str(st.session_state.book_count)
-
 def embed_function(texts: Documents) -> Embeddings:
     return model.encode(texts).tolist()
     
 def click_ingest_file_btn():
-    # creating a pdf file object
-    pdfFileObj = open(st.session_state.new_doc, 'rb')
-     
     # creating a pdf reader object
-    pdfReader = PyPDF2.PdfReader(pdfFileObj)
+    pdfReader = PyPDF2.PdfReader(st.session_state.new_doc)
      
     # printing number of pages in pdf file
     print(len(pdfReader.pages))
     
-    db_name = st.session_state.new_doc.split('/')[-1].split('.')[0].replace(' ','_')
+    db_name = st.session_state.new_doc.name.split('/')[-1].split('.')[0].replace(' ','_')
     db_name = db_name[0:63] if len(db_name) > 63 else db_name
     
     
@@ -74,9 +63,7 @@ def click_ingest_file_btn():
             documents=page_documents,
             ids=page_ids
         )
-     
-    # closing the pdf file object
-    pdfFileObj.close()
+    
     st.session_state.document_list.append(db_name)
     
 def click_search_btn():
@@ -86,15 +73,11 @@ def click_search_btn():
     n_results = len(res['ids'][0])
     st.session_state.search_res = ['ID: ' + res['ids'][0][i] + "\t Score: " + str(res['distances'][0][i]) + "\n\n" + res['documents'][0][i] for i in range(n_results)]
     
-# Set up tkinter
-root = tk.Tk()
-root.withdraw()
+    
+    
 
-# Make folder picker dialog appear on top of other windows
-root.wm_attributes('-topmost', 1)
-
-
-
+# ###### header ######
+    
 st.header('Search your document')
 
 # ###### side bar ######
@@ -103,10 +86,10 @@ x = st.sidebar.empty()
 x.info("Ingest new document: ")
 # st.sidebar.write("Ingest new document: " + st.session_state.new_doc)
 
-select_file_btn = st.sidebar.button("Select file")
-if select_file_btn:
-    st.session_state.new_doc = fd.askopenfilename(master=root)
-    x.info("Ingest new document: " + st.session_state.new_doc)
+uploaded_file = st.sidebar.file_uploader("Choose a file")
+if uploaded_file is not None:
+    st.session_state.new_doc = uploaded_file
+    x.info("Ingest new document: " + st.session_state.new_doc.name)
 
 ingest_file_btn = st.sidebar.button("Ingest new file", on_click=click_ingest_file_btn)
 
