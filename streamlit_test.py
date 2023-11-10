@@ -2,7 +2,6 @@ import streamlit as st
 import tkinter as tk
 from tkinter import filedialog as fd
 from transformers import AutoTokenizer, AutoModel
-import torch
 import os.path
 import pandas as pd
 from sentence_transformers import SentenceTransformer
